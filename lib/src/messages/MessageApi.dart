@@ -47,6 +47,14 @@ abstract class MessageApi {
     MessageParams additional,
   });
 
+  Future<MessageStanza> readMessage({
+    required Jid to,
+    required String userId,
+    required String messageId,
+    String text = '',
+    MessageParams additional,
+  });
+
   Future<MessageStanza> pinChat(
     Jid to,
     bool isPinned, {

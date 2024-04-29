@@ -92,11 +92,11 @@ class PresenceManager implements PresenceApi {
   }
 
   @override
-  void askDirectPresence(Jid to) async {
+  Future<PresenceStanza> askDirectPresence(Jid to) async {
     var presenceStanza = PresenceStanza.withType(PresenceType.PROBE);
     presenceStanza.toJid = to;
     presenceStanza.fromJid = _connection.fullJid;
-    await _connection.writeStanzaWithQueue(presenceStanza);
+    return await _connection.writeStanzaWithQueue(presenceStanza);
   }
 
   @override

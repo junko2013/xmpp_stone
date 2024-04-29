@@ -239,7 +239,7 @@ class XMPPClientManager {
     Log.i(LOG_TAG, message);
   }
 
-  // My Profile
+  // 我的虚拟名片
   Future<VCard> vCardRead() async {
     var vCardManager = xmpp.VCardManager(_connection!);
     final vCard = await vCardManager.getSelfVCard();
@@ -247,7 +247,7 @@ class XMPPClientManager {
     onLog('Your info' + vCard.buildXmlString());
       return vCard;
   }
-
+  //更新虚拟名片
   void vCardUpdate(xmpp.VCard Function(xmpp.VCard vCardToUpdate) _onUpdate) {
     var vCardManager = xmpp.VCardManager(_connection!);
     vCardManager.getSelfVCard().then((vCard) {
@@ -264,7 +264,7 @@ class XMPPClientManager {
     });
   }
 
-  // Update presence and status
+  // 更新出席和状态
   void presenceSend(PresenceShowElement presenceShowElement,
       {String? description}) {
     var presenceData = xmpp.PresenceData(
@@ -272,35 +272,35 @@ class XMPPClientManager {
         priority: presenceShowElement == PresenceShowElement.CHAT ? 1 : 0);
     _presenceManager.sendPresence(presenceData);
   }
-
-  void presenceFrom(receiver) {
+  //查询用户的出席情况
+  Future<PresenceStanza> presenceFrom(receiver) {
     var jid = xmpp.Jid.fromFullJid(receiver);
-    _presenceManager.askDirectPresence(jid);
+    return _presenceManager.askDirectPresence(jid);
   }
-
+  //订阅用户的出席情况
   void presenceSubscribe(String receiver) {
     var jid = xmpp.Jid.fromFullJid(receiver);
     _presenceManager.subscribe(jid);
   }
-
+  //拒绝用户订阅我的出席情况
   void presenceReject(String receiver) {
     var jid = xmpp.Jid.fromFullJid(receiver);
     _presenceManager.declineSubscription(jid);
   }
-
+  //接受用户订阅我的出席情况
   void presenceAccept(String receiver) {
     var jid = xmpp.Jid.fromFullJid(receiver);
     _presenceManager.acceptSubscription(jid);
   }
 
-  // My contact/buddy
+  // 联系人的虚拟名片
   Future<xmpp.VCard> vCardFrom(receiver) {
     var receiverJid = xmpp.Jid.fromFullJid(receiver);
     var vCardManager = xmpp.VCardManager(_connection!);
     return vCardManager.getVCardFor(receiverJid);
   }
 
-  // Get roster list
+  // 我的联系人列表
   Future<List<xmpp.Buddy>> rosterList() {
     var completer = Completer<List<xmpp.Buddy>>();
 
@@ -313,7 +313,7 @@ class XMPPClientManager {
     return completer.future;
   }
 
-  // Add friend
+  // 添加联系人
   Future<List<xmpp.Buddy>> rosterAdd(receiver) {
     var completer = Completer<List<xmpp.Buddy>>();
     var receiverJid = xmpp.Jid.fromFullJid(receiver);
@@ -332,7 +332,7 @@ class XMPPClientManager {
     });
     return completer.future;
   }
-
+  //移除联系人
   Future<List<xmpp.Buddy>> rosterRemove(receiver) {
     var completer = Completer<List<xmpp.Buddy>>();
     var receiverJid = xmpp.Jid.fromFullJid(receiver);
@@ -352,8 +352,7 @@ class XMPPClientManager {
     return completer.future;
   }
 
-  // Multi user chat
-
+  // 获取群聊消息
   Future<DiscoverRoomResponse> getRoom(String roomName) {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
     var roomJid = xmpp.Jid.fromFullJid(roomName);
@@ -363,6 +362,7 @@ class XMPPClientManager {
     return mucManager.discoverRoom(roomJid);
   }
 
+  //获取群聊配置
   Future<GetRoomConfigResponse> getReservedRoomConfig(String roomName) {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
     var roomJid = xmpp.Jid.fromFullJid(roomName);
@@ -372,7 +372,7 @@ class XMPPClientManager {
     return mucManager.requestReservedRoomConfig(roomJid);
   }
 
-  // Create room
+  // 设置群聊配置
   Future<SetRoomConfigResponse> setRoomConfig(String roomName,
       GroupChatroomParams config, List<RoomConfigField> roomConfigFields) {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -388,7 +388,7 @@ class XMPPClientManager {
             roomConfigFields: roomConfigFields));
   }
 
-  // Create room
+  // 创建群聊
   Future<CreateRoomResponse> createInstantRoom(
       String roomName, GroupChatroomParams config) {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -399,7 +399,7 @@ class XMPPClientManager {
     return mucManager.createRoom(roomJid);
   }
 
-  // Join room
+  // 加入群聊
   Future<JoinRoomResponse> join(
       String roomName, JoinGroupChatroomParams config) {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -410,6 +410,7 @@ class XMPPClientManager {
     return mucManager.joinRoom(roomJid, config);
   }
 
+  //接受邀请
   Future<AcceptRoomResponse> acceptInvitation(
       String roomName, AcceptGroupChatroomInvitationParams params) {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -420,7 +421,7 @@ class XMPPClientManager {
     return mucManager.acceptRoomInvitation(roomJid, params);
   }
 
-  // Get group members
+  // 获取群聊成员
   Future<GetUsersResponse> getMembers(String roomName) async {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
     var roomJid = xmpp.Jid.fromFullJid(roomName);
@@ -431,7 +432,7 @@ class XMPPClientManager {
     return await mucManager.getMembers(roomJid);
   }
 
-  // Get group owners
+  // 获取群聊群主
   Future<GetUsersResponse> getOwners(String roomName) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
     xmpp.Jid roomJid = xmpp.Jid.fromFullJid(roomName);
@@ -442,7 +443,7 @@ class XMPPClientManager {
     return await mucManager.getOwners(roomJid);
   }
 
-  // Get group admins
+  // 获取群聊管理员
   Future<GetUsersResponse> getAdmins(String roomName) async {
     var mucManager = xmpp.MultiUserChatManager(_connection!);
     var roomJid = xmpp.Jid.fromFullJid(roomName);
@@ -453,7 +454,7 @@ class XMPPClientManager {
     return await mucManager.getAdmins(roomJid);
   }
 
-  // Add members in group
+  // 邀请成员到群聊
   Future<void> inviteMemberToGroup(
       String roomName, Iterable<String> memberJids) {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -466,7 +467,7 @@ class XMPPClientManager {
     return Future.value();
   }
 
-  // Add members in group
+  // 同步添加成员到群聊
   Future<AddUsersResponse> addMembersInGroup(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -482,7 +483,7 @@ class XMPPClientManager {
         isAsync: false);
     // return await mucManager.addMembers(roomJid,memberJids);
   }
-
+  //异步添加多个成员到群聊
   Future<AddUsersResponse> addMembersInGroupAsync(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -499,7 +500,7 @@ class XMPPClientManager {
     // return await mucManager.addMembersAsync(roomJid,memberJids);
   }
 
-  // Add admins in group
+  // 同步添加群聊管理员
   Future<AddUsersResponse> addAdminsInGroup(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -515,7 +516,7 @@ class XMPPClientManager {
         isAsync: false);
     // return await mucManager.addAdmins(roomJid, memberJids);
   }
-
+  // 异步添加群聊管理员
   Future<AddUsersResponse> addAdminsInGroupAsync(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -532,7 +533,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
-  // Add owner in group
+  // 同步添加群主
   Future<AddUsersResponse> addOwnersInGroup(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -548,7 +549,7 @@ class XMPPClientManager {
         isAsync: false);
     // return await mucManager.addAdmins(roomJid, memberJids);
   }
-
+  // 异步添加群主
   Future<AddUsersResponse> addOwnersInGroupAsync(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -565,7 +566,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
-  // Remove members
+  // 同步批量移除成员
   Future<AddUsersResponse> removeMembersInGroup(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -581,7 +582,7 @@ class XMPPClientManager {
         isAsync: false);
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
-
+  // 异步批量移除成员
   Future<AddUsersResponse> removeMembersInGroupAsync(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -598,7 +599,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
-  // Remove admins
+  // 同步批量移除管理员
   Future<AddUsersResponse> removeAdminsInGroup(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -615,6 +616,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
+  // 异步批量移除管理员
   Future<AddUsersResponse> removeAdminsInGroupAsync(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -631,7 +633,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
-  // Remove owners
+  //同步移除群主
   Future<AddUsersResponse> removeOwnersInGroup(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -648,6 +650,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
+  //异步移除群主
   Future<AddUsersResponse> removeOwnersInGroupAsync(
       String roomName, Iterable<String> memberJids) async {
     final mucManager = xmpp.MultiUserChatManager(_connection!);
@@ -664,7 +667,7 @@ class XMPPClientManager {
     // return await mucManager.addAdminsAsync(roomJid, memberJids);
   }
 
-  // Send 1-1 message
+  // 发送单聊消息
   Future<xmpp.MessageStanza> sendMessage(
     String message,
     String receiver,
@@ -681,7 +684,7 @@ class XMPPClientManager {
     );
   }
 
-  // Send system message
+  // 发送系统消息
   Future<xmpp.MessageStanza> sendSystemMessage(
     String message,
     String receiver, {
@@ -695,7 +698,7 @@ class XMPPClientManager {
       onStanzaCreated: onStanzaCreated,
     );
   }
-
+  //发送加密消息
   Future<xmpp.MessageStanza> sendSecureMessage(
       EncryptElement encryptBody, String receiver,
       {MessageParams additional = const MessageParams(
@@ -714,13 +717,13 @@ class XMPPClientManager {
       additional: additional,
     );
   }
-
+  //发送聊天状态
   Future<xmpp.MessageStanza> sendState(String receiver,
       MessageStanzaType messageType, ChatStateType chatStateType) {
     return _messageHandler.sendState(
         xmpp.Jid.fromFullJid(receiver), messageType, chatStateType);
   }
-
+  //发送消息送达回执
   Future<xmpp.MessageStanza> sendDeliveryAck(xmpp.MessageStanza message) {
     return _messageHandler.sendMessage(message.fromJid, '', false,
         additional: MessageParams(
@@ -757,7 +760,7 @@ class XMPPClientManager {
         includeGroup: queryParams.includeGroup);
   }
 
-  /// Last Activity method
+  /// 用户最后活跃
   Future<LastActivityResponse> askLastActivity(final String userJid) async {
     return await _lastActivityManager.askLastActivity(Jid.fromFullJid(userJid));
   }
@@ -805,7 +808,7 @@ class XMPPClientManager {
     return await omemoManager.envelopeEncryptionContent(params);
   }
 
-  // Send MUC info changed, such as: subject, coverUrl
+  // 发送群聊信息更新，比如：主体、头像、禁言、标记已读/未读
   Future<xmpp.MessageStanza> sendMUCInfoMessage(
     String receiver, {
     String? subject,
@@ -840,7 +843,7 @@ class XMPPClientManager {
     );
   }
 
-  // Change member role
+  // 修改成员角色
   Future<xmpp.MessageStanza> changeMemberRole(
     String receiver, {
     required String userJid,
@@ -865,7 +868,7 @@ class XMPPClientManager {
     );
   }
 
-  // Pin or unpin a message
+  // (取消)置顶消息
   Future<xmpp.MessageStanza> pinMessage(
       String receiver, String messageId, bool isPinned,
       {MessageParams additional = const MessageParams(
@@ -883,7 +886,7 @@ class XMPPClientManager {
         additional: additional);
   }
 
-  // Add reaction to message
+  // 消息回应
   Future<xmpp.MessageStanza> reactMessage(
     String receiver,
     String messageId,
@@ -913,7 +916,7 @@ class XMPPClientManager {
     );
   }
 
-  // Edit a message
+  // 编辑消息
   Future<xmpp.MessageStanza> editMessage(
     String receiver,
     String messageId,
@@ -940,8 +943,35 @@ class XMPPClientManager {
       onStanzaCreated: onStanzaCreated,
     );
   }
+  //消息已读
+  Future<xmpp.MessageStanza> readMessage(
+      String receiver, {
+        String text = '',
+        required String userId, required String messageId,
+        MessageParams additional = const MessageParams(
+            millisecondTs: 0,
+            customString: '',
+            messageId: '',
+            receipt: ReceiptRequestType.RECEIVED,
+            messageType: MessageStanzaType.CHAT,
+            chatStateType: ChatStateType.None,
+            ampMessageType: AmpMessageType.None,
+            options: XmppCommunicationConfig(shallWaitStanza: false),
+            hasEncryptedBody: false),
+        void Function(MessageStanza)? onStanzaCreated,
+      }) {
+    return _messageHandler.readMessage(
+      to: xmpp.Jid.fromFullJid(receiver),
+      userId: userId,
+      messageId: messageId,
+      text: text,
+      additional: additional,
+      onStanzaCreated: onStanzaCreated,
+    );
+  }
 
-  // Pin or unpin a chat
+
+  // (取消)置顶对话
   Future<xmpp.MessageStanza> pinChat(
     String receiver,
     bool isPinned, {
@@ -963,7 +993,7 @@ class XMPPClientManager {
     );
   }
 
-  // Quote a message
+  // 引用消息
   Future<xmpp.MessageStanza> quoteMessage(
     String receiver,
     String messageId,
@@ -999,7 +1029,7 @@ class XMPPClientManager {
     );
   }
 
-  // recall a message
+  // 撤回消息
   Future<xmpp.MessageStanza> recallMessage(
       String receiver, List<String> messageIds, String fromUserId,
       {MessageParams additional = const MessageParams(
