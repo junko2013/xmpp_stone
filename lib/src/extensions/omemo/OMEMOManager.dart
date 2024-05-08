@@ -62,7 +62,7 @@ class OMEMOManager extends OMEMOManagerApi {
   Future<OMEMOPublishBundleResponse> publishBundle(
       OMEMOPublishBundleParams params) async {
     final requestStanza = params.buildRequest(from: _connection.fullJid);
-    await _connection.writeStanzaWithQueue(requestStanza);
+    _connection.writeStanzaWithQueue(requestStanza);
     return responseHandler.set<OMEMOPublishBundleResponse>(
         requestStanza.id!, requestStanza,
         description: 'Publish user OMEMO bundle');
@@ -95,7 +95,7 @@ class OMEMOManager extends OMEMOManagerApi {
   Future<OMEMOGetBundleResponse> fetchBundle(
       OMEMOGetBundleParams params) async {
     final requestStanza = params.buildRequest(from: _connection.fullJid);
-    await _connection.writeStanzaWithQueue(requestStanza);
+    _connection.writeStanzaWithQueue(requestStanza);
     return responseHandler.set<OMEMOGetBundleResponse>(
         requestStanza.id!, requestStanza,
         description: 'Fetching user OMEMO bundle');
@@ -105,7 +105,7 @@ class OMEMOManager extends OMEMOManagerApi {
   Future<OMEMOGetDevicesResponse> fetchDevices(
       OMEMOGetDevicesParams params) async {
     final requestStanza = params.buildRequest(from: _connection.fullJid);
-    await _connection.writeStanzaWithQueue(requestStanza);
+    _connection.writeStanzaWithQueue(requestStanza);
     return responseHandler.set<OMEMOGetDevicesResponse>(
         requestStanza.id!, requestStanza,
         description: 'Fetching user devices');
@@ -115,7 +115,7 @@ class OMEMOManager extends OMEMOManagerApi {
   Future<OMEMOPublishDeviceResponse> publishDevice(
       OMEMOPublishDeviceParams params) async {
     final requestStanza = params.buildRequest(from: _connection.fullJid);
-    await _connection.writeStanzaWithQueue(requestStanza);
+    _connection.writeStanzaWithQueue(requestStanza);
     return responseHandler.set<OMEMOPublishDeviceResponse>(
         requestStanza.id!, requestStanza,
         description: 'Publishing user devices');

@@ -203,8 +203,7 @@ class XMPPClientManager {
         _onPing!();
       }
     }));
-    _messageArchiveHandler =
-        xmpp.MessageArchiveManager.getInstance(_connection!);
+    _messageArchiveHandler = xmpp.MessageArchiveManager.getInstance(_connection!);
     _messageArchiveHandler.listen(
         ClientMAMListener(onResultFinished: (MessageArchiveResult result) {
       if (_onArchiveRetrieved != null) {

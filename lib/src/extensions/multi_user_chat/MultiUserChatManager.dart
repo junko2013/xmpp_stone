@@ -73,7 +73,7 @@ class MultiUserChatManager {
         ..addAttribute(
             XmppAttribute('xmlns', 'http://jabber.org/protocol/disco#info')));
 
-    await _connection.writeStanzaWithQueue(iqStanza);
+    _connection.writeStanzaWithQueue(iqStanza);
 
     return responseIqHandler.set<DiscoverRoomResponse>(iqStanza.id!, iqStanza,
         description: 'Discover Multi Chat Room');
@@ -92,7 +92,7 @@ class MultiUserChatManager {
           ..name = 'item'
           ..addAttribute(XmppAttribute('affiliation', affiliation))));
 
-    await _connection.writeStanzaWithQueue(iqStanza);
+    _connection.writeStanzaWithQueue(iqStanza);
 
     return responseIqHandler.set<GetUsersResponse>(iqStanza.id!, iqStanza,
         description: 'Get Multi Chat Room\' users');
@@ -166,7 +166,7 @@ class MultiUserChatManager {
 
     iqStanza.addChild(queryElement);
 
-    await _connection.writeStanzaWithQueue(iqStanza);
+    _connection.writeStanzaWithQueue(iqStanza);
     if (!isAsync) {
       await responseIqHandler.setStream<AddUsersResponse>(
           iqStanza.id!, iqStanza,
@@ -209,7 +209,7 @@ class MultiUserChatManager {
         ..addAttribute(
             XmppAttribute('xmlns', 'http://jabber.org/protocol/muc#owner')));
 
-    await _connection.writeStanzaWithQueue(iqStanza);
+    _connection.writeStanzaWithQueue(iqStanza);
 
     return responseIqHandler.set<GetRoomConfigResponse>(iqStanza.id!, iqStanza,
         description: 'Get Multi Chat Room Configuration');
@@ -227,7 +227,7 @@ class MultiUserChatManager {
       ..toJid = roomDotMucDomain
       ..addChild(queryElement);
 
-    await _connection.writeStanzaWithQueue(iqStanza);
+    _connection.writeStanzaWithQueue(iqStanza);
 
     return responseIqHandler.set<SetRoomConfigResponse>(iqStanza.id!, iqStanza,
         description: 'Set Multi Chat Room Configuration');

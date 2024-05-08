@@ -56,7 +56,7 @@ class LastActivityManager implements LastActivityApi {
     queryElement.addAttribute(XmppAttribute('xmlns', iqLastActivityXmlns));
     iqStanza.addChild(queryElement);
 
-    await _connection.writeStanzaWithQueue(iqStanza);
+    _connection.writeStanzaWithQueue(iqStanza);
 
     return responseHandler.set<LastActivityResponse>(iqStanza.id!, iqStanza,
         description: 'Ask for user last activity');
