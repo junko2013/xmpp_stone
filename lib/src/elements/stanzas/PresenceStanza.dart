@@ -70,13 +70,13 @@ class PresenceStanza extends AbstractStanza {
     //AWAY, CHAT, DND, XA
     switch (showString) {
       case 'away':
-        return PresenceShowElement.AWAY;
+        return PresenceShowElement.away;
       case 'chat':
-        return PresenceShowElement.CHAT;
+        return PresenceShowElement.chat;
       case 'dnd':
-        return PresenceShowElement.DND;
+        return PresenceShowElement.dnd;
       case 'xa':
-        return PresenceShowElement.XA;
+        return PresenceShowElement.xa;
     }
 
     return null;
@@ -142,8 +142,8 @@ enum PresenceType {
 }
 
 enum PresenceShowElement {
-  AWAY,
-  CHAT,
-  DND,
-  XA,
+  away,
+  chat,
+  dnd,
+  xa,
 }

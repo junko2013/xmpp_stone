@@ -21,7 +21,7 @@ class PresenceManager implements PresenceApi {
   final StreamController<PresenceErrorEvent> _errorStreamController =
       StreamController<PresenceErrorEvent>.broadcast();
 
-  PresenceData _selfPresence = PresenceData(PresenceShowElement.CHAT, '', null);
+  PresenceData _selfPresence = PresenceData(PresenceShowElement.chat, '', null);
 
   PresenceData get selfPresence {
     _selfPresence.jid = _connection.fullJid;
@@ -167,7 +167,7 @@ class PresenceManager implements PresenceApi {
         case PresenceType.UNAVAILABLE:
           //presence event
           _presenceStreamController.add(PresenceData(
-              PresenceShowElement.XA, 'Unavailable', presenceStanza.fromJid,
+              PresenceShowElement.xa, 'Unavailable', presenceStanza.fromJid,
               presenceStanza: presenceStanza));
           break;
       }
@@ -182,7 +182,7 @@ class PresenceManager implements PresenceApi {
     if (state == XmppConnectionState.Ready) {
       // _sendInitialPresence();
       sendPresence(PresenceData(
-          PresenceShowElement.CHAT, null, _connection.fullJid));
+          PresenceShowElement.chat, null, _connection.fullJid));
     }
   }
 

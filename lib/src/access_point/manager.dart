@@ -268,7 +268,7 @@ class XMPPClientManager {
       {String? description}) {
     var presenceData = xmpp.PresenceData(
         presenceShowElement, description, xmpp.Jid.fromFullJid(personel.jid),
-        priority: presenceShowElement == PresenceShowElement.CHAT ? 1 : 0);
+        priority: presenceShowElement == PresenceShowElement.chat ? 1 : 0);
     _presenceManager.sendPresence(presenceData);
   }
   //查询用户的出席情况
