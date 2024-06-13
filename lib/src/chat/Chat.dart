@@ -14,28 +14,30 @@ class ChatImpl implements Chat {
   final Connection _connection;
   final Jid _jid;
 
+  Jid? _fromJid;
+
+  @override
+  Jid get fromJid => _fromJid!;
+  set fromJid(Jid? jid){
+    _fromJid = jid;
+  }
+
   @override
   Jid get jid => _jid;
   ChatState? _myState;
   @override
   ChatState? get myState => _myState;
 
-  ChatState? _remoteState;
   @override
-  ChatState? get remoteState => _remoteState;
-
   @override
   List<Message>? messages = [];
 
   final StreamController<Message> _newMessageController =
       StreamController.broadcast();
-  final StreamController<ChatState?> _remoteStateController =
-      StreamController.broadcast();
 
   @override
   Stream<Message> get newMessageStream => _newMessageController.stream;
   @override
-  Stream<ChatState?> get remoteStateStream => _remoteStateController.stream;
 
   ChatImpl(this._jid, this._connection);
 
@@ -47,16 +49,23 @@ class ChatImpl implements Chat {
       }
 
       if (message.chatState != null && !(message.isDelayed??false)) {
-        _remoteState = message.chatState;
-        _remoteStateController.add(message.chatState);
+        _newMessageController.add(message);
+      }
+    }else if (message.type == MessageStanzaType.GROUPCHAT) {
+      if (message.text != null && message.text!.isNotEmpty) {
+        messages!.add(message);
+        _newMessageController.add(message);
+      }
+
+      if (message.chatState != null && !(message.isDelayed??false)) {
+        _newMessageController.add(message);
       }
     }
   }
 
   @override
   void sendMessage(String text) {
-    var stanza =
-        MessageStanza(AbstractStanza.getRandomId(), MessageStanzaType.CHAT);
+    var stanza = MessageStanza(AbstractStanza.getRandomId(), jid.domain==_connection.account.mucDomain?MessageStanzaType.GROUPCHAT:MessageStanzaType.CHAT);
     stanza.toJid = _jid;
     stanza.fromJid = _connection.fullJid;
     stanza.body = text;
@@ -69,7 +78,7 @@ class ChatImpl implements Chat {
   @override
   set myState(ChatState? state) {
     var stanza =
-        MessageStanza(AbstractStanza.getRandomId(), MessageStanzaType.CHAT);
+    MessageStanza(AbstractStanza.getRandomId(), jid.domain==_connection.account.mucDomain?MessageStanzaType.GROUPCHAT:MessageStanzaType.CHAT);
     stanza.toJid = _jid;
     stanza.fromJid = _connection.fullJid;
     var stateElement = XmppElement();
@@ -84,10 +93,13 @@ class ChatImpl implements Chat {
 
 abstract class Chat {
   Jid get jid;
+  //增加一个fromJid，用于在群聊时区分消息来源
+  Jid? get fromJid;
+
+  set fromJid(Jid? jid);
+
   ChatState? get myState;
-  ChatState? get remoteState;
   Stream<Message> get newMessageStream;
-  Stream<ChatState?> get remoteStateStream;
   List<Message>? messages;
   void sendMessage(String text);
   set myState(ChatState? state);
@@ -99,9 +111,9 @@ enum ChatState {
   PRESENCE(1,'出席'),
   COMPOSING(2,'正在输入...'),
   GIF(3,'正在选择gif...'),
-  STICKER(4,'正在选择贴纸...'),//选择贴纸
-  EMOJI(5,'正在选择表情...'),//选择表情
-  SPEAKING(6,'正在讲话...');//正在讲话
+  STICKER(4,'正在选择贴纸...'),
+  EMOJI(5,'正在选择表情...'),
+  SPEAKING(6,'正在讲话...');
   final int code;
   final String desc;
   const ChatState(this.code,this.desc);
