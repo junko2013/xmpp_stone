@@ -87,9 +87,9 @@
     },
     {
       "name": "collection",
-      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/collection-1.18.0",
+      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/collection-1.19.0",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.4"
     },
     {
       "name": "console",
@@ -500,7 +500,7 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2024-06-10T12:19:28.978699Z",
+  "generated": "2024-06-17T07:14:05.863462Z",
   "generator": "pub",
   "generatorVersion": "3.4.3",
   "flutterRoot": "file:///Applications/flutter",
