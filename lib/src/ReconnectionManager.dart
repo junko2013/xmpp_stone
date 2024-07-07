@@ -7,8 +7,8 @@ class ReconnectionManager {
 
   late Connection _connection;
   bool isActive = false;
-  int initialTimeout = 1000;
-  int totalReconnections = 3;
+  late int initialTimeout;
+  late int totalReconnections;
   late int timeOutInMs;
   int counter = 0;
   Timer? timer;
@@ -16,8 +16,8 @@ class ReconnectionManager {
   ReconnectionManager(Connection connection) {
     _connection = connection;
     _connection.connectionStateStream.listen(connectionStateHandler);
-    initialTimeout = _connection.account.reconnectionTimeout;
-    totalReconnections = _connection.account.totalReconnections;
+    initialTimeout = _connection.account.reconnectionTimeout!;
+    totalReconnections = _connection.account.totalReconnections!;
     timeOutInMs = initialTimeout;
   }
 
@@ -59,7 +59,7 @@ class ReconnectionManager {
     if (timer != null) {
       return;
     }
-    if (counter < totalReconnections) {
+    if (counter < totalReconnections||totalReconnections==-1) {
       timer = Timer(Duration(milliseconds: timeOutInMs), () {
         _connection.reconnect();
         timer = null;

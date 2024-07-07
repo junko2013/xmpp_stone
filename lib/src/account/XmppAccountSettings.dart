@@ -12,10 +12,10 @@ class XmppAccountSettings {
   String? publicKey;
   String? privateKey;
   int port;
-  int totalReconnections = 3;
-  int reconnectionTimeout = 1000;
-  int responseTimeoutMs = 30000;
-  int writeQueueMs = 200;
+  int? totalReconnections;
+  int? reconnectionTimeout;
+  int? responseTimeoutMs;
+  int? writeQueueMs;
   bool ackEnabled = true;
   String? wsPath;
   List<String>? wsProtocols;
@@ -33,7 +33,11 @@ class XmppAccountSettings {
     this.wsProtocols,
     this.customScheme,
     this.publicKey,
-    this.privateKey
+    this.privateKey,
+    this.totalReconnections,
+    this.reconnectionTimeout,
+    this.responseTimeoutMs,
+    this.writeQueueMs
   });
 
   Jid get fullJid => Jid(username, domain, resource);

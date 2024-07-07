@@ -62,16 +62,18 @@ class XMPPClientManager {
   String LOG_TAG = 'XMPPClientManager';
   String? host;
   String? mucDomain = '';
-  int responseTimeoutMs = 30000;
-  int writeQueueMs = 200;
   int port = 5222;
+  int? responseTimeoutMs;
+  int? writeQueueMs;
+  int? totalReconnections;
+  int? reconnectionTimeout;
   String? customScheme;
   String? wsPath;
   String? resource;
   String? publicKey;
   String? privateKey;
   List<String>? wsProtocols;
-  late XMPPClientPersonal personel;
+  late XMPPClientPersonal personal;
   Function(XMPPClientManager _context)? _onReady;
   Function(String timestamp, String logMessage)? _onLog;
   Function(XMPPMessageParams message, ListenerType listenerType)? _onMessage;
@@ -116,17 +118,19 @@ class XMPPClientManager {
     String? host,
     int port = 5222,
     String? this.mucDomain,
-    this.responseTimeoutMs = 30000,
-    this.writeQueueMs = 200,
     String? resource,
     String? wsPath,
     String? customScheme,
     String? publicKey,
     String? privateKey,
+    int totalReconnections =3,
+    int reconnectionTimeout = 1000,
+    int writeQueueMs = 200,
+    int responseTimeoutMs = 30000,
     bool logXmpp = false,
     List<String>? wsProtocols,
   }) {
-    personel = XMPPClientPersonal(jid, password);
+    personal = XMPPClientPersonal(jid, password);
     LOG_TAG = '$LOG_TAG/$jid';
     _onReady = onReady;
     _onLog = onLog;
@@ -147,18 +151,22 @@ class XMPPClientManager {
     this.resource = resource;
     this.publicKey = publicKey;
     this.privateKey = privateKey;
+    this.totalReconnections = totalReconnections;
+    this.reconnectionTimeout = reconnectionTimeout;
+    this.writeQueueMs = writeQueueMs;
+    this.responseTimeoutMs = responseTimeoutMs;
   }
 
   XMPPClientManager createSession() {
     Log.logLevel = LogLevel.DEBUG;
     Log.logXmpp = _logXmpp;
-    var jid = xmpp.Jid.fromFullJid(personel.jid);
+    var jid = xmpp.Jid.fromFullJid(personal.jid);
     Log.d(LOG_TAG, 'Connecting to $host');
     var account = xmpp.XmppAccountSettings(
-      personel.jid,
+      personal.jid,
       jid.local,
       jid.domain,
-      personel.password,
+      personal.password,
       port,
       mucDomain: mucDomain,
       host: host,
@@ -167,11 +175,13 @@ class XMPPClientManager {
       wsProtocols: wsProtocols,
       customScheme: customScheme,
       publicKey:publicKey,
-      privateKey: privateKey
+      privateKey: privateKey,
+      totalReconnections: totalReconnections,
+      reconnectionTimeout:reconnectionTimeout,
+      responseTimeoutMs:responseTimeoutMs,
+      writeQueueMs:writeQueueMs,
     );
 
-    account.responseTimeoutMs = responseTimeoutMs;
-    account.writeQueueMs = writeQueueMs;
     _connection = xmpp.Connection(account);
     _connection!.connect();
     _listenConnection();
@@ -242,7 +252,7 @@ class XMPPClientManager {
   Future<VCard> vCardRead() async {
     var vCardManager = xmpp.VCardManager(_connection!);
     final vCard = await vCardManager.getSelfVCard();
-    personel.profile = vCard;
+    personal.profile = vCard;
     onLog('Your info' + vCard.buildXmlString());
       return vCard;
   }
@@ -257,7 +267,7 @@ class XMPPClientManager {
       onLog(
           'manager.vCardUpdate::my updated info ${_vCardUpdated.buildXmlString()}');
       vCardManager.updateSelfVCard(_vCardUpdated).then((updatedAckVCard) {
-        personel.profile = _vCardUpdated;
+        personal.profile = _vCardUpdated;
         onLog('manager.vCardUpdate::my updated info - Updated info success');
       });
     });
@@ -267,7 +277,7 @@ class XMPPClientManager {
   void presenceSend(PresenceShowElement presenceShowElement,
       {String? description}) {
     var presenceData = xmpp.PresenceData(
-        presenceShowElement, description, xmpp.Jid.fromFullJid(personel.jid),
+        presenceShowElement, description, xmpp.Jid.fromFullJid(personal.jid),
         priority: presenceShowElement == PresenceShowElement.chat ? 1 : 0);
     _presenceManager.sendPresence(presenceData);
   }

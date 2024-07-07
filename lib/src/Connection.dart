@@ -10,6 +10,7 @@ import 'package:xmpp_stone/src/account/XmppAccountSettings.dart';
 import 'package:xmpp_stone/src/data/Jid.dart';
 import 'package:xmpp_stone/src/elements/nonzas/Nonza.dart';
 import 'package:xmpp_stone/src/elements/stanzas/AbstractStanza.dart';
+import 'package:xmpp_stone/src/elements/stanzas/MessageStanza.dart';
 import 'package:xmpp_stone/src/exception/XmppException.dart';
 import 'package:xmpp_stone/src/extensions/ping/PingManager.dart';
 import 'package:xmpp_stone/src/features/ConnectionNegotiationManager.dart';
@@ -25,7 +26,6 @@ import 'package:xmpp_stone/src/response/BaseResponse.dart';
 import 'package:xmpp_stone/src/response/Response.dart';
 import 'package:xmpp_stone/src/roster/RosterManager.dart';
 import 'package:xmpp_stone/src/utils/Random.dart';
-
 import 'connection/XmppWebSocketIo.dart' as xmppSocket;
 
 enum XmppConnectionState {
@@ -94,22 +94,22 @@ class Connection {
   bool authenticated = false;
 
   final StreamController<AbstractStanza?> _inStanzaStreamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   final StreamController<AbstractStanza> _outStanzaStreamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   final StreamController<Nonza> _inNonzaStreamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   final StreamController<Nonza> _outNonzaStreamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   final StreamController<XmppConnectionState> _connectionStateStreamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   final StreamController<BaseResponse> _responseStreamController =
-      StreamController.broadcast();
+  StreamController.broadcast();
 
   Stream<AbstractStanza?> get inStanzasStream {
     return _inStanzaStreamController.stream;
@@ -174,9 +174,9 @@ class Connection {
 
     connectionId = generateId();
     // Assign configured timeout
-    ResponseHandler.responseTimeoutMs = account.responseTimeoutMs;
+    ResponseHandler.responseTimeoutMs = account.responseTimeoutMs!;
     ResponseHandler.setResponseStream(_responseStreamController);
-    ConnectionWriteQueue.idealWriteIntervalMs = account.writeQueueMs;
+    ConnectionWriteQueue.idealWriteIntervalMs = account.writeQueueMs!;
     Log.v(this.toString(), 'Create new connection instance');
   }
 
@@ -268,24 +268,24 @@ xml:lang='en'
           map: prepareStreamResponse,
           customScheme: account.customScheme,
         ).then((socket) {
-            if (_state != XmppConnectionState.Closed) {
-              setState(XmppConnectionState.SocketOpened);
-              _socket = socket;
-              _socketSubscription = socket.listen(
-                  handleResponse,
-                  onError: (e,stackTrace){
-                    Log.d(TAG, 'error : $e,$stackTrace');
-                  },
-                  onDone: (){
-                    handleConnectionDone();
-                  }
-              );
-              _openStream();
-            } else {
-              Log.d(TAG, 'Closed in meantime');
-              socket.close();
-            }
-          },
+          if (_state != XmppConnectionState.Closed) {
+            setState(XmppConnectionState.SocketOpened);
+            _socket = socket;
+            _socketSubscription = socket.listen(
+                handleResponse,
+                onError: (e,stackTrace){
+                  Log.d(TAG, 'error : $e,$stackTrace');
+                },
+                onDone: (){
+                  handleConnectionDone();
+                }
+            );
+            _openStream();
+          } else {
+            Log.d(TAG, 'Closed in meantime');
+            socket.close();
+          }
+        },
           onError: (error, _) => handleConnectionError(error.toString()),
         );
       } else {
@@ -306,10 +306,10 @@ xml:lang='en'
   startSecureSocket() {
     Log.d(TAG, 'startSecureSocket');
     _socket?.secure(
-      context: SecurityContext()
-        ..useCertificateChainBytes(utf8.encode(account.publicKey??''))
-        ..usePrivateKeyBytes(utf8.encode(account.privateKey??'')),
-      onBadCertificate: _validateBadCertificate
+        context: SecurityContext()
+          ..useCertificateChainBytes(utf8.encode(account.publicKey??''))
+          ..usePrivateKeyBytes(utf8.encode(account.privateKey??'')),
+        onBadCertificate: _validateBadCertificate
     ).then((secureSocket) {
       if (secureSocket == null) return;
 
@@ -413,7 +413,7 @@ xml:lang='en'
       Log.d(this.toString(), 'Receiving full response:\n: ${fullResponse}');
       try {
         xmlResponse = xml.XmlDocument.parse(
-                fullResponse.replaceAll(RegExp(r'<\?(xml.+?)>'), ''))
+            fullResponse.replaceAll(RegExp(r'<\?(xml.+?)>'), ''))
             .firstChild;
       } catch (e) {
         _unparsedXmlResponse += fullResponse.substring(
@@ -541,7 +541,7 @@ xml:lang='en'
 
   bool elementHasAttribute(xml.XmlElement element, xml.XmlAttribute attribute) {
     var list = element.attributes.firstWhereOrNull((attr) =>
-        attr.name.local == attribute.name.local &&
+    attr.name.local == attribute.name.local &&
         attr.value == attribute.value);
     return list != null;
   }
@@ -615,5 +615,26 @@ xml:lang='en'
   bool isAsyncSocketState() {
     return _state == XmppConnectionState.SocketOpening ||
         _state == XmppConnectionState.Closing;
+  }
+
+  // 新增方法：发送消息并等待结果
+  //适用场景：本次运行中，发送消息后需要等待消息发送结果，用于关注实时的消息发送状态
+  //app重启后将无法接收到消息发送结果
+  Future<MessageStanza> sendMessageWithResult(MessageStanza stanza) async {
+    final Completer<MessageStanza> completer = Completer<MessageStanza>();
+    writeStanza(stanza);
+    // 监听消息发送结果
+    StreamSubscription<AbstractStanza?>? subscription;
+    subscription = inStanzasStream.listen((stanza) {
+      if (stanza is MessageStanza && stanza.id == stanza.id) {
+        completer.complete(stanza);
+        subscription?.cancel();
+      }
+    }, onError: (error) {
+      completer.complete(error);
+      subscription?.cancel();
+    });
+
+    return completer.future;
   }
 }
