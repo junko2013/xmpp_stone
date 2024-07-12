@@ -10,6 +10,12 @@ abstract class MessageApi {
     bool isCustom, {
     MessageParams additional,
   });
+  Future<MessageStanza> sendMucMessage(
+    Jid to,
+    String text,
+    bool isCustom, {
+    MessageParams additional,
+  });
 
   Future<MessageStanza> sendSystemMessage(
     Jid to,

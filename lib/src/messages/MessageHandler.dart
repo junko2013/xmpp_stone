@@ -72,6 +72,33 @@ class MessageHandler implements MessageApi {
       onStanzaCreated: onStanzaCreated,
     );
   }
+  @override
+  Future<MessageStanza> sendMucMessage(
+    Jid? to,
+    String text,
+    bool isCustom, {
+    MessageParams additional = const MessageParams(
+      millisecondTs: 0,
+      customString: '',
+      messageId: '',
+      receipt: ReceiptRequestType.NONE,
+      messageType: MessageStanzaType.GROUPCHAT,
+      chatStateType: ChatStateType.None,
+      ampMessageType: AmpMessageType.None,
+      hasEncryptedBody: false,
+      options: XmppCommunicationConfig(shallWaitStanza: false),
+    ),
+    void Function(MessageStanza)? onStanzaCreated,
+  }) {
+    return _sendMessageStanza(
+      to,
+      text,
+      isCustom,
+      additional,
+      null,
+      onStanzaCreated: onStanzaCreated,
+    );
+  }
 
   @override
   Future<MessageStanza> sendSystemMessage(
