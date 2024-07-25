@@ -27,7 +27,7 @@ class PingManager {
 
   void _connectionStateProcessor(XmppConnectionState event) {
     // connection state processor.
-    print("connection state :$event");
+    // print("connection state :$event");
   }
 
   void _processStanza(AbstractStanza? stanza) async {

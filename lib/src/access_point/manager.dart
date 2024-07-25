@@ -193,6 +193,7 @@ class XMPPClientManager {
     _connection!.forceClose();
     _connectionStateListener.close();
     _connectionResponseListener.close();
+    messageListener?.cancel();
   }
 
   void reconnect() {
