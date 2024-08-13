@@ -3,7 +3,7 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/_fe_analyzer_shared-68.0.0",
+      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/_fe_analyzer_shared-73.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -21,7 +21,7 @@
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/analyzer-6.5.0",
+      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/analyzer-6.8.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -225,7 +225,7 @@
     },
     {
       "name": "macros",
-      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/macros-0.1.0-main.0",
+      "rootUri": "file:///Users/chenjungao/.pub-cache/hosted/pub.flutter-io.cn/macros-0.1.2-main.4",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -500,10 +500,10 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2024-07-29T07:00:58.220271Z",
+  "generated": "2024-08-12T03:38:34.057484Z",
   "generator": "pub",
-  "generatorVersion": "3.4.4",
+  "generatorVersion": "3.5.0",
   "flutterRoot": "file:///Applications/flutter",
-  "flutterVersion": "3.22.3",
+  "flutterVersion": "3.24.0",
   "pubCache": "file:///Users/chenjungao/.pub-cache"
 }

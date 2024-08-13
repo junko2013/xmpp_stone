@@ -25,6 +25,7 @@ dependencies:
   collection: ^1.18.0
   universal_io: ^2.2.2
   web_socket_channel: ^3.0.1
+  dart_jsonwebtoken: ^2.14.0
   jose: ^0.3.4
   uuid: ^4.4.2
 
