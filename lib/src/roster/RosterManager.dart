@@ -111,6 +111,9 @@ class RosterManager {
 
   void _processStanza(AbstractStanza? stanza) {
     if (stanza is IqStanza) {
+      if(stanza.id==null){
+        return;
+      }
       responseHandler.test(stanza.id!, (res) {
         late BaseResponse response;
         switch (res.item3) {
