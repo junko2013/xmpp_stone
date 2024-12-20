@@ -7,4 +7,6 @@ abstract class ReceiptInterface {
   ReceiptInterface addReceivedReceipt();
   XmppElement? getRequestReceipt();
   XmppElement? getReceivedReceipt();
+  ReceiptInterface addSpamReceipt();
+  XmppElement? getSpamReceipt();
 }

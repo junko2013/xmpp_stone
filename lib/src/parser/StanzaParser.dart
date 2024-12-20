@@ -12,6 +12,7 @@ import 'package:xmpp_stone/src/elements/messages/CustomSubElement.dart';
 import 'package:xmpp_stone/src/elements/messages/DelayElement.dart';
 import 'package:xmpp_stone/src/elements/messages/ReceiptReceivedElement.dart';
 import 'package:xmpp_stone/src/elements/messages/ReceiptRequestElement.dart';
+import 'package:xmpp_stone/src/elements/messages/ReceiptSpamElement.dart';
 import 'package:xmpp_stone/src/elements/messages/TimeElement.dart';
 import 'package:xmpp_stone/src/elements/messages/TimeStampElement.dart';
 import 'package:xmpp_stone/src/elements/messages/carbon/ForwardedElement.dart';
@@ -39,6 +40,7 @@ class StanzaParser {
     'time#ts': () => TimeStampElement(),
     'message#request': () => ReceiptRequestElement(),
     'message#received': () => ReceiptReceivedElement(),
+    'message#spam': () => ReceiptSpamElement(),
     'message#amp': () => AmpElement(),
     'amp#rule': () => AmpRuleElement(),
     'message#custom': () => CustomElement(),
